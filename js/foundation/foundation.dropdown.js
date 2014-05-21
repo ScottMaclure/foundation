@@ -45,14 +45,34 @@
 
           if (!settings.is_hover) self.toggle($(this));
         })
-        .on('mouseenter', '[data-dropdown]', function (e) {
+        on('mouseenter', '[data-dropdown]', function (e) {
           var settings = $.extend({}, self.settings, self.data_options($(this)));
           if (settings.is_hover) self.toggle($(this));
         })
+        .on('mouseleave', '[data-dropdown]', function (e) {
+          var target = $(this);
+          var dropdown = target.next();
+          var settings = $.extend({}, self.settings, self.data_options(target));
+          if (settings.is_hover) {
+            // Use of a delay PLUS mouseEntered flag helps us realise that we should NOT close this dropdown yet.
+            // Means user has moved mouse from button to dropdown UI.
+            setTimeout(function () {
+              if (!dropdown.data('mouseEntered')) {
+                self.close.call(self, dropdown);
+              }
+            }, 50);
+          }
+        })
+        .on('mouseenter', '[data-dropdown-content]', function (e) {
+          $(this).data('mouseEntered', true);
+        })
         .on('mouseleave', '[data-dropdown-content]', function (e) {
+          $(this).data('mouseEntered', false);
           var target = $('[data-dropdown="' + $(this).attr('id') + '"]'),
-              settings = $.extend({}, self.settings, self.data_options(target));
-          if (settings.is_hover) self.close.call(self, $(this));
+            settings = $.extend({}, self.settings, self.data_options(target));
+          if (settings.is_hover) {
+            self.close.call(self, $(this));
+          }
         })
         .on('opened.fndtn.dropdown', '[data-dropdown-content]', this.settings.opened)
         .on('closed.fndtn.dropdown', '[data-dropdown-content]', this.settings.closed);
