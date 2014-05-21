@@ -45,7 +45,7 @@
 
           if (!settings.is_hover) self.toggle($(this));
         })
-        on('mouseenter', '[data-dropdown]', function (e) {
+        .on('mouseenter', '[data-dropdown]', function (e) {
           var settings = $.extend({}, self.settings, self.data_options($(this)));
           if (settings.is_hover) self.toggle($(this));
         })
